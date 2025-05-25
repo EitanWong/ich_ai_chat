@@ -1,5 +1,13 @@
 // @import './iconfont.css';
 
+@font-face {
+  font-family: 'AlimamaDongFangDaKai';
+  src: url('@/static/font/Alimama_DongFangDaKai_Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 .test {
   // 可以通过 @apply 多个样式封装整体样式
   @apply mt-4 ml-4;
@@ -15,4 +23,104 @@ page {
 
   // 修改按钮背景色
   // --wot-button-primary-bg-color: green;
+
+  // 聊天组件背景色
+  --chat-bg-color: rgba(255, 255, 255, 0.95);
+}
+
+#__next,
+#app,
+#root,
+body,
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Customize scrollbar for WebKit browsers */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(155, 155, 155, 0.5);
+    border-radius: 20px;
+    border: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(155, 155, 155, 0.8);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(155, 155, 155, 0.3);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(155, 155, 155, 0.5);
+    }
+  }
+}
+
+/* Customize scrollbar for non-WebKit browsers */
+@media not screen and (-webkit-min-device-pixel-ratio: 0) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+  }
+
+  body {
+    -ms-overflow-style: none;
+  }
+
+  *::-ms-thumb {
+    background-color: rgba(155, 155, 155, 0.5);
+    border-radius: 20px;
+    border: transparent;
+  }
+
+  *::-ms-thumb:hover {
+    background-color: rgba(155, 155, 155, 0.8);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    *::-ms-thumb {
+      background-color: rgba(155, 155, 155, 0.3);
+    }
+
+    *::-ms-thumb:hover {
+      background-color: rgba(155, 155, 155, 0.5);
+    }
+  }
+}
+
+:root,
+page {
+  // 设置全局字体
+  font-family:
+    'AlimamaDongFangDaKai',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Helvetica Neue',
+    Helvetica,
+    Segoe UI,
+    Arial,
+    Roboto,
+    'PingFang SC',
+    'miui',
+    'Hiragino Sans GB',
+    'Microsoft Yahei',
+    sans-serif;
 }

@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
 import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only'
+import { useChatStore } from '@/store/chat'
 
 onLaunch(() => {
   console.log('App Launch')
+  // 初始化聊天 store
+  const chatStore = useChatStore()
+  chatStore.initialize()
 })
 onShow(() => {
   console.log('App Show')
@@ -17,6 +21,11 @@ onHide(() => {
 /* stylelint-disable selector-type-no-unknown */
 button::after {
   border: none;
+}
+
+page {
+  height: 100%;
+  overflow: hidden;
 }
 
 swiper,
