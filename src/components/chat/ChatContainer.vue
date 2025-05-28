@@ -59,24 +59,31 @@ let checkTimer: number | null = null
 
 // 添加滚动位置监听
 watch(scrollTop, (newValue) => {
+
   if (scrollTimer) {
     clearTimeout(scrollTimer)
   }
+
   scrollTimer = setTimeout(() => {
     checkScrollPosition()
   }, 100)
+
 })
 
 // 初始化容器监听
 onMounted(() => {
+  
   // 使用 uni-app 的 API 获取容器信息
   updateContainerInfo()
+
   // 定期检查容器信息
   checkTimer = setInterval(updateContainerInfo, 1000)
+
 })
 
 // 更新容器信息
 const updateContainerInfo = () => {
+
   const query = uni.createSelectorQuery()
   query.select('.chat-container__scroll').boundingClientRect()
   query.select('.chat-container__messages').boundingClientRect()
@@ -87,20 +94,24 @@ const updateContainerInfo = () => {
       checkScrollPosition()
     }
   })
+
 }
 
 // 组件卸载时清理
 onUnmounted(() => {
+
   if (scrollTimer) {
     clearTimeout(scrollTimer)
   }
   if (checkTimer) {
     clearInterval(checkTimer)
   }
+
 })
 
 // 检查滚动位置
 const checkScrollPosition = () => {
+
   // 当消息列表为空时，隐藏滚动按钮
   if (messages.value.length === 0) {
     if (chatInputRef.value) {
@@ -116,6 +127,7 @@ const checkScrollPosition = () => {
   if (chatInputRef.value) {
     chatInputRef.value.showScrollButton = !isAtBottom
   }
+
 }
 
 // 处理滚动
@@ -135,7 +147,7 @@ const scrollToBottom = () => {
 
     // 使用 nextTick 确保 DOM 更新后再滚动
     nextTick(() => {
-      const maxScrollTop = Math.max(0, messagesHeight.value - containerHeight.value + 50)
+      const maxScrollTop = Math.max(0, messagesHeight.value - containerHeight.value)
       scrollTop.value = maxScrollTop
       if (chatInputRef.value) {
         chatInputRef.value.showScrollButton = false
@@ -239,7 +251,7 @@ const handleScrollToUpper = () => {
   }
 
   &__bottom-space {
-    height: 200rpx;
+    height: 400rpx;
   }
 }
 </style>

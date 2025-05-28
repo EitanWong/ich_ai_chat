@@ -1,8 +1,8 @@
 // @import './iconfont.css';
 
 @font-face {
-  font-family: 'AlimamaDongFangDaKai';
-  src: url('@/static/font/Alimama_DongFangDaKai_Regular.otf') format('opentype');
+  font-family: 'SourceHanSansCN-Medium';
+  src: url('@/static/font/SourceHanSansCN-Medium.ttf') format('opentype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -110,7 +110,7 @@ html {
 page {
   // 设置全局字体
   font-family:
-    'AlimamaDongFangDaKai',
+    'SourceHanSansCN-Medium',
     -apple-system,
     BlinkMacSystemFont,
     'Helvetica Neue',

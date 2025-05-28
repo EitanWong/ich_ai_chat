@@ -10,12 +10,14 @@
     <view class="assistant-message__content">
       <LoadingContent v-if="status === 'sent'" />
       <template v-else>
+        <template v-if="reasoningContent && reasoningContent.length > 0">
         <ThinkingContent
           :content="reasoningContent || ''"
           :is-thinking="status === 'reasoning'"
           :is-collapsed="isThinkingCollapsed"
           @update:is-collapsed="isThinkingCollapsed = $event"
         />
+        </template>
         <ResponseContent
           v-if="
             status === 'streaming' || status === 'done' || status === 'abort' || status === 'error'

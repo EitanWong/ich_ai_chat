@@ -38,7 +38,7 @@ import 'recorder-core/src/engine/mp3-engine' //如果此格式有额外的编码
 import 'recorder-core/src/extensions/waveview'
 // #endif
 
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, getCurrentInstance } from 'vue'
 
 // 录音状态
 const recordAuth = ref(false) // 是否授权录音
@@ -58,11 +58,22 @@ const buttonSize = computed(() => {
 })
 
 // 录音计时器
-const recordingTimer = (_time: any) => {
-  if (_time == undefined) {
+const recordingTimer = (shouldStart: boolean = false) => {
+  if (shouldStart) {
     if (timer.value) clearInterval(timer.value)
     timer.value = setInterval(() => {
       time.value++
+      // 检查是否达到最大录音时长
+      if (time.value * 1000 >= duration.value) {
+        stopRecord()
+        if (typeof uni !== 'undefined') {
+          uni.showToast({
+            title: '已达到最大录音时长',
+            icon: 'none',
+            duration: 2000,
+          })
+        }
+      }
     }, 1000)
   } else {
     if (timer.value) {
@@ -83,25 +94,30 @@ const authorRecord = (onSuccess?: () => void) => {
     },
     (msg, isUserNotAllow) => {
       if (isUserNotAllow) {
-        uni.showModal({
-          content: '检测到您没打开录音功能权限，是否去设置打开？',
-          confirmText: '确认',
-          confirmColor: '#1874f5',
-          cancelText: '取消',
-          success: (res) => {
-            if (res.confirm) {
-              uni.openSetting({
-                success: (res) => {
-                  const setting = res.authSetting
-                  recordAuth.value = setting['scope.record'] || false
-                  if (recordAuth.value) {
-                    onSuccess?.()
-                  }
-                },
-              })
-            }
-          },
-        })
+        // 确保 uni 对象存在
+        if (typeof uni !== 'undefined') {
+          uni.showModal({
+            content: '检测到您没打开录音功能权限，是否去设置打开？',
+            confirmText: '确认',
+            confirmColor: '#1874f5',
+            cancelText: '取消',
+            success: (res) => {
+              if (res.confirm) {
+                uni.openSetting({
+                  success: (res) => {
+                    const setting = res.authSetting
+                    recordAuth.value = setting['scope.record'] || false
+                    if (recordAuth.value) {
+                      onSuccess?.()
+                    }
+                  },
+                })
+              }
+            },
+          })
+        } else {
+          console.error('uni 对象不可用，无法显示权限设置对话框')
+        }
       }
       console.error('请求录音权限失败：' + msg)
     },
@@ -153,25 +169,27 @@ const startRecording = () => {
       () => {
         console.log('已开始录音')
         isRecording.value = true
-        recordingTimer(undefined)
+        recordingTimer(true)
         emit('start-recording')
       },
       (msg) => {
         console.error('开始录音失败：' + msg)
         isRecording.value = false
-        recordingTimer(time.value)
+        recordingTimer(false)
       },
     )
   } catch (error) {
     console.error('录音启动错误:', error)
     isRecording.value = false
-    recordingTimer(time.value)
+    recordingTimer(false)
     // 显示错误提示
-    uni.showToast({
-      title: error instanceof Error ? error.message : '录音启动失败',
-      icon: 'none',
-      duration: 3000,
-    })
+    if (typeof uni !== 'undefined') {
+      uni.showToast({
+        title: error instanceof Error ? error.message : '录音启动失败',
+        icon: 'none',
+        duration: 3000,
+      })
+    }
   }
 }
 
@@ -182,7 +200,7 @@ const stopRecord = () => {
   try {
     RecordApp.Stop(
       (arrayBuffer: any, duration: any, mime: any) => {
-        recordingTimer(time.value)
+        recordingTimer(false)
         isRecording.value = false
         emit('stop-recording')
 
@@ -191,9 +209,6 @@ const stopRecord = () => {
         if (!extension) {
           throw new Error('无法获取音频文件扩展名')
         }
-
-        // 创建带扩展名的文件名
-        const fileName = `recording.${extension}`
 
         // 创建 Blob 对象，确保设置正确的 MIME 类型
         const blob = new Blob([arrayBuffer], { type: mime })
@@ -207,23 +222,27 @@ const stopRecord = () => {
       (msg) => {
         console.error('结束录音失败：' + msg)
         isRecording.value = false
-        recordingTimer(time.value)
-        uni.showToast({
-          title: '录音结束失败',
-          icon: 'none',
-          duration: 3000,
-        })
+        recordingTimer(false)
+        if (typeof uni !== 'undefined') {
+          uni.showToast({
+            title: '录音结束失败',
+            icon: 'none',
+            duration: 3000,
+          })
+        }
       },
     )
   } catch (error) {
     console.error('录音停止错误:', error)
     isRecording.value = false
-    recordingTimer(time.value)
-    uni.showToast({
-      title: error instanceof Error ? error.message : '录音停止失败',
-      icon: 'none',
-      duration: 3000,
-    })
+    recordingTimer(false)
+    if (typeof uni !== 'undefined') {
+      uni.showToast({
+        title: error instanceof Error ? error.message : '录音停止失败',
+        icon: 'none',
+        duration: 3000,
+      })
+    }
   }
 }
 
@@ -242,13 +261,9 @@ const initVoice = () => {
 }
 
 // 设置录音时长
-const setDuration = async () => {
-  const res: number = await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(5 * 60 * 1000)
-    }, 1000)
-  })
-  duration.value = res
+const setDuration = () => {
+  // 设置最大录音时长为 5 分钟
+  duration.value = 5 * 60 * 1000
 }
 
 // 定义事件

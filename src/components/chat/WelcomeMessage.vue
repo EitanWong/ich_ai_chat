@@ -16,15 +16,15 @@
   text-align: center;
 
   &__title {
-    font-size: 48rpx;
+    font-size: 62rpx;
     font-weight: bold;
     margin-bottom: 20rpx;
-    color: #333;
+    color: #000000;
   }
 
   &__text {
     font-size: 32rpx;
-    color: #666;
+    color: #333333;
     line-height: 1.5;
   }
 }
